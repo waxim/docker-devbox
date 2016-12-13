@@ -1,0 +1,91 @@
+version: '2'
+
+services:
+    httpd:
+        image: abiosoft/caddy:php
+        env_file: .env
+        environment:
+            - MYSQL_SOCK=/shared/mysql.sock
+            - MYSQL_ROOT_USER=root
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_REMOTE_ADDR=172.16.50.10
+            - MYSQL_REMOTE_PORT=3306
+            - PHP_FPM_ADDR=172.16.50.12
+            - PHP_FPM_PORT=9000
+            - DB_HOST=172.16.50.10
+
+        ports:
+            - "127.0.0.1:80:80"
+            - "127.0.0.1:443:443"
+
+        networks:
+            dev_net:
+                ipv4_address: 172.16.50.11
+
+        volumes:
+            - ./Caddyfile:/etc/Caddyfile
+            - ./srv:/srv
+
+        links:
+            - "db:db"
+            - "php:php"
+
+    db:
+        image: mysql:5.6
+        env_file: .env
+        environment:
+            - MYSQL_SOCK=/shared/mysql.sock
+            - MYSQL_ROOT_USER=root
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_REMOTE_ADDR=172.16.50.10
+            - MYSQL_REMOTE_PORT=3306
+
+        ports:
+            - "127.0.0.1:3306:3306"
+
+        networks:
+              dev_net:
+                ipv4_address: 172.16.50.10
+
+        volumes:
+            - ./run/mysql:/tmp/mysql
+            - ./data:/var/lib/mysql
+            - ./Caddyfile:/etc/Caddyfile
+            - ./srv:/srv
+
+
+    php:
+        image: mikechernev/php7-fpm-laravel
+        env_file: .env
+        environment:
+            - MYSQL_SOCK=/shared/mysql.sock
+            - MYSQL_ROOT_USER=root
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_REMOTE_ADDR=172.16.50.10
+            - MYSQL_REMOTE_PORT=3306
+            - DB_HOST=172.16.50.10
+
+        ports:
+            - "127.0.0.1:9000:9000"
+
+        networks:
+              dev_net:
+                ipv4_address: 172.16.50.12
+
+        volumes:
+            - ./run/mysql:/tmp/mysql
+            - ./data:/var/lib/mysql
+            - ./Caddyfile:/etc/Caddyfile
+            - ./srv:/srv
+
+
+networks:
+  dev_net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.50.0/25
+        gateway: 172.16.50.1

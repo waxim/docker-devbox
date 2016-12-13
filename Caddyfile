@@ -1,0 +1,11 @@
+{$DOMAIN}:80 {
+    startup php-fpm # php variant only
+
+    log /shared/logs/caddy.log
+
+    root /srv
+
+    fastcgi / {$PHP_FPM_ADDR}:{$PHP_FPM_PORT} php {
+        index index.php
+    }
+}
