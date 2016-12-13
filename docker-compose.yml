@@ -55,7 +55,7 @@ services:
 
 
     php:
-        image: mikechernev/php7-fpm-laravel
+        image: cytopia/php-fpm-7.1
         env_file: .env
         environment:
             - MYSQL_SOCK=/shared/mysql.sock
@@ -64,6 +64,8 @@ services:
             - MYSQL_REMOTE_ADDR=172.16.50.10
             - MYSQL_REMOTE_PORT=3306
             - DB_HOST=172.16.50.10
+            - TIMEZONE=Europe/London
+            - ENABLE_MAIL=1
 
         ports:
             - "127.0.0.1:9000:9000"
@@ -77,6 +79,8 @@ services:
             - ./data:/var/lib/mysql
             - ./Caddyfile:/etc/Caddyfile
             - ./srv:/srv
+            - ./logs/mail:/var/mail
+            - ./logs/php:/var/log/php-fpm
 
 
 networks:
