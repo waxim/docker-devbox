@@ -16,6 +16,9 @@ Obviously you'll need docker installed for this to work and make sure you enter 
 ## Network Errors
 If you're getting network errors when starting the box, edit the `IP_RANGE` value in your `.env` file to something else.
 
+## MySQL
+A MySQL db will be automatically created based on the value you enter in your `MYSQL_DATABASE` value in `.env`
+
 ## Rewrites
 To rewrite requests to `index.php` add the following to your `Caddyfile` inside the site definition
 
