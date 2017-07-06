@@ -3,9 +3,13 @@
 
     log /shared/logs/caddy.log
 
-    root /srv
+    root /srv/project/httpdocs
 
     fastcgi / {$PHP_FPM_ADDR}:{$PHP_FPM_PORT} php {
         index index.php
+    }
+
+    rewrite {
+        to {path} {path}/ /index.php?{query}
     }
 }

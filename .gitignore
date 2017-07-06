@@ -1,3 +1,5 @@
 data/*
 run/*
 logs/*
+srv/*
+posgres/*

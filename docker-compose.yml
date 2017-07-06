@@ -5,14 +5,8 @@ services:
         image: abiosoft/caddy:php
         env_file: .env
         environment:
-            - MYSQL_SOCK=/shared/mysql.sock
-            - MYSQL_ROOT_USER=root
-            - MYSQL_ROOT_PASSWORD=root
-            - MYSQL_REMOTE_ADDR=172.16.${IP_RANGE}.10
-            - MYSQL_REMOTE_PORT=3306
             - PHP_FPM_ADDR=172.16.${IP_RANGE}.12
             - PHP_FPM_PORT=9000
-            - DB_HOST=172.16.${IP_RANGE}.10
 
         ports:
             - "127.0.0.1:80:80"
@@ -27,45 +21,15 @@ services:
             - ./srv:/srv
 
         links:
-            - "db:db"
             - "php:php"
-
-    db:
-        image: mysql:5.6
-        env_file: .env
-        environment:
-            - MYSQL_SOCK=/shared/mysql.sock
-            - MYSQL_ROOT_USER=root
-            - MYSQL_ROOT_PASSWORD=root
-            - MYSQL_REMOTE_ADDR=172.16.${IP_RANGE}.10
-            - MYSQL_REMOTE_PORT=3306
-
-        ports:
-            - "127.0.0.1:3306:3306"
-
-        networks:
-              dev_net:
-                ipv4_address: 172.16.${IP_RANGE}.10
-
-        volumes:
-            - ./run/mysql:/tmp/mysql
-            - ./data:/var/lib/mysql
-            - ./Caddyfile:/etc/Caddyfile
-            - ./srv:/srv
 
 
     php:
-        image: cytopia/php-fpm-7.1
+        image: cytopia/php-fpm-7.0
         env_file: .env
         environment:
-            - MYSQL_SOCK=/shared/mysql.sock
-            - MYSQL_ROOT_USER=root
-            - MYSQL_ROOT_PASSWORD=root
-            - MYSQL_REMOTE_ADDR=172.16.${IP_RANGE}.10
-            - MYSQL_REMOTE_PORT=3306
-            - DB_HOST=172.16.50.10
             - TIMEZONE=Europe/London
-            - ENABLE_MAIL=1
+            - ENABLE_MAIL=0
 
         ports:
             - "127.0.0.1:9000:9000"
@@ -75,12 +39,11 @@ services:
                 ipv4_address: 172.16.${IP_RANGE}.12
 
         volumes:
-            - ./run/mysql:/tmp/mysql
-            - ./data:/var/lib/mysql
             - ./Caddyfile:/etc/Caddyfile
             - ./srv:/srv
             - ./logs/mail:/var/mail
             - ./logs/php:/var/log/php-fpm
+            - ./config:/etc/php-custom.d
 
 
 networks:
